@@ -1,22 +1,22 @@
 #include "mbed.h"
-// Cylon style LED scanner
-BusOut led_state(LED1, LED2, LED3, LED4);
+#include "DebounceIn.h"
+// must import Cookbook Debounce library into project
+// URL: http://mbed.org/users/AjK/libraries/DebounceIn/lky9pc
 
-int main() {
-    int i = 0;
-    // initinal LED state
-    led_state = 0x1;
-    while (1) {
-        // loop through all states
-        for (i=0; i<6; i++) {
-            if (i<3)
-                // shift left 1 bit until high LED set
-                led_state = led_state << 1;
-            else
-                // then reverse and shift back to right 1 bit
-                led_state = led_state >> 1;
-            // time delay .1s to slow down display
-            wait(0.1);
-        }
+DigitalOut myled(p21);
+DebounceIn pb(p8);
+// SPST Pushbutton count demo using internal PullUp function
+// no external PullUp resistor needed
+// Pushbutton from P8 to GND.
+// Demonstrates need for debounce - will not count more than once per button hit
+// This occurs on all switches due to mechanical contact bounce
+int main()
+{ 
+    // Use internal pullup for pushbutton
+    pb.mode(PullUp);
+    // Delay for initial pullup to take effect
+    wait(.001);
+    while(1) {
+        myled = !pb;
     }
 }
